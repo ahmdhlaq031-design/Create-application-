@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>وزارة التربية - نظام الجدول المدرسي</title>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+
+    :root {
+        --primary: #4d5c3a;
+        --primary-dark: #3a4630;
+        --primary-light: #e8ebdf;
+        --primary-mid: #6b7a54;
+        --border: #d1d5cc;
+        --border-dark: #9aa08f;
+        --bg: #f7f8f5;
+        --bg-white: #ffffff;
+        --bg-hover: #f0f2ea;
+        --text: #1a1e15;
+        --text-dim: #4a5240;
+        --text-mute: #7a8271;
+        --success: #4d7c3a;
+        --danger: #a8402f;
+        --warning: #b87830;
+    }
+
+    body {
+        background: var(--bg);
+        min-height: 100vh;
+        color: var(--text);
+        font-size: 13px;
+    }
+
+    /* ============ الهيدر الرسمي ============ */
+    .official-header {
+        background: white;
+        border-bottom: 3px solid var(--primary);
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    .official-header .right {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex: 1;
+        min-width: 250px;
+    }
+    .official-header .logo {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+    .official-header .titles { display: flex; flex-direction: column; gap: 2px; }
+    .official-header .titles .t1 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--primary-dark);
+        letter-spacing: 0.3px;
+    }
+    .official-header .titles .t2 {
+        font-size: 0.78rem;
+        color: var(--text-dim);
+        font-weight: 700;
+    }
+    .official-header .titles .t3 {
+        font-size: 0.7rem;
+        color: var(--text-mute);
+        font-weight: 500;
+    }
+
+    /* ============ التبويبات ============ */
+    .tabs-nav {
+        background: white;
+        border-bottom: 1px solid var(--border);
+        padding: 0 24px;
+        display: flex;
+        gap: 0;
+        overflow-x: auto;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        scrollbar-width: none;
+    }
+    .tabs-nav::-webkit-scrollbar { display: none; }
+    .tab-btn {
+        padding: 10px 16px;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: var(--text-dim);
+        cursor: pointer;
+        font-size: 0.74rem;
+        font-weight: 700;
+        font-family: inherit;
+        transition: all 0.15s;
+        white-space: nowrap;
+        letter-spacing: 0.2px;
+    }
+    .tab-btn:hover { color: var(--primary); background: var(--bg-hover); }
+    .tab-btn.active {
+        color: var(--primary-dark);
+        border-bottom-color: var(--primary);
+    }
+    .tab-btn .badge {
+        display: inline-block;
+        background: var(--bg-hover);
+        color: var(--text-dim);
+        padding: 1px 6px;
+        border-radius: 9px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        min-width: 18px;
+        text-align: center;
+        margin-right: 4px;
+    }
+    .tab-btn.active .badge { background: var(--primary); color: white; }
+
+    /* ============ المحتوى ============ */
+    .content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 18px 24px;
+    }
+
+    .card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .card-title {
+        font-size: 0.88rem;
+        font-weight: 800;
+        color: var(--primary-dark);
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        letter-spacing: 0.2px;
+    }
+
+    /* ============ الحقول ============ */
+    input, select, textarea {
+        width: 100%;
+        padding: 7px 10px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        color: var(--text);
+        font-size: 0.83rem;
+        font-family: inherit;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(77,92,58,0.1);
+    }
+    input::placeholder { color: var(--text-mute); }
+
+    label {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        margin-bottom: 4px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+    }
+
+    .field { margin-bottom: 10px; }
+    .row { display: grid; gap: 10px; }
+    .row-2 { grid-template-columns: 1fr 1fr; }
+    .row-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .row-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+    /* ============ الأزرار ============ */
+    .btn {
+        padding: 7px 14px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.78rem;
+        font-weight: 700;
+        font-family: inherit;
+        transition: all 0.15s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        white-space: nowrap;
+        letter-spacing: 0.2px;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover:not(:disabled) { background: #3d6330; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover:not(:disabled) { background: #8a3425; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-warning:hover:not(:disabled) { background: #96621f; }
+    .btn-secondary {
+        background: white;
+        color: var(--text);
+        border: 1px solid var(--border);
+    }
+    .btn-secondary:hover:not(:disabled) { background: var(--bg-hover); border-color: var(--border-dark); }
+    .btn-sm { padding: 4px 10px; font-size: 0.72rem; }
+    .btn-xs { padding: 3px 8px; font-size: 0.68rem; border-radius: 3px; }
+    .btn-block { width: 100%; }
+    .btn-lg { padding: 11px 22px; font-size: 0.85rem; }
+
+    /* ============ شبكة الصفوف ============ */
+    .grades-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    .grade-btn {
+        padding: 12px 14px !important;
+        font-size: 0.85rem !important;
+        justify-content: space-between !important;
+        width: 100%;
+    }
+    .grade-btn .badge {
+        background: var(--primary);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        min-width: 22px;
+        text-align: center;
+    }
+
+    /* ============ البطاقات ============ */
+    .item {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 10px 12px;
+        margin-bottom: 6px;
+    }
+    .item-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+    }
+    .item-title {
+        font-weight: 700;
+        color: var(--text);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .item-actions { display: flex; gap: 4px; }
+    .item-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 5px;
+    }
+
+    .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        padding: 2px 8px;
+        border-radius: 2px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        background: var(--bg-hover);
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+    }
+    .tag-blue { background: var(--primary-light); color: var(--primary-dark); border-color: #c5cbb6; }
+    .tag-green { background: #e4ede0; color: #3d6330; border-color: #bdd1b3; }
+    .tag-orange { background: #f5ead5; color: #8a5a1e; border-color: #e0ccaa; }
+    .tag-red { background: #f2dedb; color: #8a3425; border-color: #dbb8b3; }
+
+    /* ============ الشرائح ============ */
+    .chip-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+    .chip {
+        padding: 5px 11px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: var(--text-dim);
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+    }
+    .chip:hover { background: var(--bg-hover); border-color: var(--border-dark); color: var(--text); }
+    .chip.on {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+    .chip.on::before { content: "✓ "; }
+
+    /* ============ جدول الجدول ============ */
+    .tt-wrap { overflow-x: auto; border-radius: 3px; border: 1px solid var(--border); }
+    table.tt {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        min-width: 700px;
+        font-size: 0.78rem;
+    }
+    table.tt th {
+        background: var(--primary);
+        color: white;
+        padding: 8px 5px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-align: center;
+        border: 1px solid var(--primary-dark);
+        letter-spacing: 0.2px;
+    }
+    table.tt th.corner { background: var(--primary-dark); }
+    table.tt td {
+        padding: 3px;
+        border: 1px solid var(--border);
+        text-align: center;
+        vertical-align: middle;
+        height: 50px;
+    }
+    table.tt td.day-cell {
+        background: var(--bg-hover);
+        font-weight: 700;
+        color: var(--primary-dark);
+        padding: 6px 8px;
+        white-space: nowrap;
+        width: 85px;
+    }
+    table.tt td.clickable { cursor: pointer; transition: background 0.15s; }
+    table.tt td.clickable:hover { background: var(--bg-hover); }
+
+    .slot {
+        border-radius: 3px;
+        padding: 5px 3px;
+        font-size: 0.72rem;
+        line-height: 1.2;
+        text-align: center;
+    }
+    .slot-sub { font-weight: 700; display: block; }
+    .slot-teacher { display: block; font-size: 0.65rem; opacity: 0.85; margin-top: 1px; }
+    .slot.empty { color: #c0c5b5; }
+    .slot.filled {
+        background: var(--primary-light);
+        border: 1px solid #c5cbb6;
+        color: var(--primary-dark);
+    }
+    .slot.filled .slot-sub { color: var(--primary-dark); }
+    .slot.filled .slot-teacher { color: var(--primary); }
+    .slot.fixed {
+        background: #f5ead5;
+        border: 1px solid #e0ccaa;
+    }
+    .slot.fixed .slot-sub { color: #8a5a1e; }
+    .slot.fixed .slot-teacher { color: #a06a24; }
+    .slot .pin { position: absolute; top: 2px; left: 3px; font-size: 0.6rem; }
+
+    /* ============ التنبيهات ============ */
+    .alert {
+        padding: 10px 14px;
+        border-radius: 3px;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        line-height: 1.6;
+        border-right: 4px solid;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .alert-info { background: #eef2e8; border-color: var(--primary); color: var(--primary-dark); }
+    .alert-success { background: #e8f0e3; border-color: var(--success); color: #3d6330; }
+    .alert-warning { background: #f7f0e0; border-color: var(--warning); color: #8a5a1e; }
+    .alert-danger { background: #f5e5e2; border-color: var(--danger); color: #8a3425; }
+
+    .helper { color: var(--text-mute); font-size: 0.76rem; margin-bottom: 8px; line-height: 1.5; }
+
+    .empty { text-align: center; padding: 35px 20px; color: var(--text-mute); }
+    .empty .icon { font-size: 2rem; margin-bottom: 8px; opacity: 0.35; }
+
+    /* ============ الإحصائيات ============ */
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    .stat {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 12px;
+        text-align: center;
+    }
+    .stat .num { font-size: 1.3rem; font-weight: 800; color: var(--primary-dark); }
+    .stat .lbl { font-size: 0.68rem; color: var(--text-mute); margin-top: 3px; font-weight: 700; letter-spacing: 0.2px; }
+    .stat.ok .num { color: var(--success); }
+    .stat.warn .num { color: var(--warning); }
+    .stat.err .num { color: var(--danger); }
+
+    /* ============ Toast ============ */
+    .toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        border: 1px solid var(--border-dark);
+        color: var(--text);
+        padding: 11px 20px;
+        border-radius: 3px;
+        z-index: 9999;
+        font-weight: 700;
+        font-size: 0.83rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        animation: slideUp 0.3s;
+        max-width: 90vw;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .toast::before { font-size: 1rem; }
+    .toast.success { border-right: 4px solid var(--success); }
+    .toast.success::before { content: "✓"; color: var(--success); }
+    .toast.error { border-right: 4px solid var(--danger); }
+    .toast.error::before { content: "✕"; color: var(--danger); }
+    .toast.warning { border-right: 4px solid var(--warning); }
+    .toast.warning::before { content: "⚠"; color: var(--warning); }
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ============ نافذة منبثقة ============ */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(26,30,21,0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9000;
+        padding: 15px;
+    }
+    .modal {
+        background: white;
+        border-radius: 4px;
+        width: 100%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal.wide { max-width: 750px; }
+    .modal-header {
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--primary-light);
+    }
+    .modal-header h3 { font-size: 0.92rem; color: var(--primary-dark); font-weight: 800; }
+    .modal-close {
+        background: transparent;
+        border: none;
+        color: var(--text-dim);
+        font-size: 1.4rem;
+        cursor: pointer;
+        width: 30px; height: 30px;
+        border-radius: 3px;
+        transition: all 0.15s;
+    }
+    .modal-close:hover { background: rgba(0,0,0,0.05); color: var(--text); }
+    .modal-body { padding: 18px; overflow-y: auto; flex: 1; }
+    .modal-footer {
+        padding: 12px 18px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        background: var(--bg);
+    }
+
+    /* ============ صف التوزيع ============ */
+    .assign-row {
+        display: grid;
+        grid-template-columns: 1fr 110px 36px;
+        gap: 8px;
+        align-items: center;
+        padding: 7px 10px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        margin-bottom: 5px;
+    }
+    .assign-row .name {
+        font-size: 0.8rem;
+        color: var(--text);
+        font-weight: 700;
+    }
+    .assign-row input { text-align: center; padding: 5px 8px; font-size: 0.8rem; }
+    .assign-row .del {
+        background: var(--danger);
+        color: white;
+        border: none;
+        width: 28px; height: 28px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+    .assign-row .del:hover { background: #8a3425; }
+
+    /* ============ Scrollbar ============ */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+    /* ============ استجابة الشاشات الصغيرة ============ */
+    @media (max-width: 700px) {
+        .row-2, .row-3, .row-4 { grid-template-columns: 1fr; }
+        .content { padding: 10px; }
+        .tab-btn { padding: 9px 10px; font-size: 0.68rem; }
+        .official-header { padding: 8px 12px; }
+        .official-header .titles .t1 { font-size: 0.85rem; }
+        .official-header .titles .t2 { font-size: 0.7rem; }
+        .official-header .titles .t3 { font-size: 0.62rem; }
+        .official-header .logo { width: 44px; height: 44px; }
+        .official-header .topbar-actions { width: 100%; }
+        .official-header .topbar-actions .btn { flex: 1; font-size: 0.68rem; padding: 6px 8px; }
+        
+        /* ✅ إبقاء الصفوف صفّين في السطر حتى على الجوال */
+        .grades-grid { 
+            grid-template-columns: 1fr 1fr !important;
+            gap: 6px;
+        }
+        .grade-btn {
+            padding: 10px 8px !important;
+            font-size: 0.78rem !important;
+        }
+        .grade-btn .badge {
+            padding: 1px 6px;
+            font-size: 0.65rem;
+            min-width: 18px;
+        }
+        
+        .card { padding: 10px; }
+        .card-title { font-size: 0.82rem; margin-bottom: 8px; padding-bottom: 6px; }
+        .stats { grid-template-columns: repeat(2, 1fr); }
+        .stat { padding: 8px; }
+        .stat .num { font-size: 1.1rem; }
+        .stat .lbl { font-size: 0.62rem; }
+        
+        /* نافذة منبثقة أكبر على الجوال */
+        .modal { max-height: 95vh; }
+        .modal-body { padding: 12px; }
+        .assign-row { grid-template-columns: 1fr 60px 32px; gap: 5px; padding: 5px 7px; }
+    }
+    
+    /* للشاشات الصغيرة جداً (أقل من 380px) */
+    @media (max-width: 380px) {
+        .grade-btn {
+            padding: 8px 6px !important;
+            font-size: 0.72rem !important;
+        }
+        .official-header .titles .t3 { display: none; }
+    }
+
+    @media print {
+        body { background: white; color: black; }
+        .official-header .logo, .tabs-nav, .btn, .modal-overlay { display: none !important; }
+        .official-header { border-bottom: 2px solid #000; padding: 10px 0; }
+        .card { background: white; border: 1px solid #999; box-shadow: none; }
+        table.tt { background: white; }
+        table.tt th { background: #e5e7eb !important; color: #000 !important; border: 1px solid #666; }
+        table.tt td { border: 1px solid #666; }
+        table.tt td.day-cell { background: #f3f4f6; color: #000; }
+        .slot.filled { background: #eef2e8 !important; border: 1px solid #6b7a54 !important; }
+        .slot.fixed { background: #f5ead5 !important; border: 1px solid #b87830 !important; }
+    }
+</style>
+</head>
+<body>
+
+<!-- ============ الهيدر الرسمي ============ -->
+<div class="official-header">
+    <div class="right">
+        <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnug1rB1tC-srQAJKwZvFZrJ5gdQmUFfNlZpF9cPShhRY2K5UaNCbSPFE&s" alt="شعار وزارة التربية">
+        <div class="titles">
+            <div class="t1">الجمهورية العربية السورية</div>
+            <div class="t2">وزارة التربية - نظام الجدول المدرسي</div>
+            <div class="t3">منصة إدارة البرامج الدراسية للشعب والأساتذة</div>
+        </div>
+    </div>
+    <div class="topbar-actions" style="display: flex; gap: 6px;">
+        <button class="btn btn-secondary btn-sm" onclick="exportData()">تصدير البيانات</button>
+        <button class="btn btn-secondary btn-sm" onclick="importData()">استيراد البيانات</button>
+    </div>
+</div>
+
+<!-- ============ التبويبات ============ -->
+<div class="tabs-nav">
+    <button class="tab-btn active" data-tab="subjects" onclick="switchTab('subjects')">
+        المواد <span class="badge" id="badge-subjects">0</span>
+    </button>
+    <button class="tab-btn" data-tab="teachers" onclick="switchTab('teachers')">
+        الأساتذة <span class="badge" id="badge-teachers">0</span>
+    </button>
+    <button class="tab-btn" data-tab="classes" onclick="switchTab('classes')">
+        الشعب <span class="badge" id="badge-classes">0</span>
+    </button>
+    <button class="tab-btn" data-tab="programs" onclick="switchTab('programs')">
+        البرامج
+    </button>
+</div>
+
+<!-- ============ المحتوى ============ -->
+<div class="content" id="content"></div>
+
+<script>
+// ===================================================================
+// ==================== البيانات ===================================================================
+// ===================================================================
+const DEFAULT_SUBJECTS = ['عربي', 'رياضيات', 'إنكليزي', 'علوم', 'ديانة', 'فيزيا', 'كيميا', 'فرنسي'];
+const ALL_DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+const GRADES = [
+    { key: 'أول', label: 'الأول' },
+    { key: 'ثاني', label: 'الثاني' },
+    { key: 'ثالث', label: 'الثالث' },
+    { key: 'رابع', label: 'الرابع' },
+    { key: 'خامس', label: 'الخامس' },
+    { key: 'سادس', label: 'السادس' },
+    { key: 'سابع', label: 'السابع' },
+    { key: 'ثامن', label: 'الثامن' },
+    { key: 'تاسع', label: 'التاسع' },
+    { key: 'عاشر', label: 'العاشر' },
+    { key: 'حادي عشر', label: 'الحادي عشر' },
+    { key: 'بكلوريا', label: 'البكلوريا' }
+];
+const STORAGE_KEY = 'moe_school_v2';
+
+let state = {
+    subjects: [],
+    teachers: [],
+    classes: [],
+    schedule: null,
+    fixedSlots: {},
+    gradeCounter: {},
+    currentTab: 'subjects',
+    currentView: 'all',
+    programView: 'menu'
+};
+
+// ===================================================================
+// ==================== التخزين ===================================================================
+// ===================================================================
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function load() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+        try { state = { ...state, ...JSON.parse(raw) }; } catch(e) {}
+    }
+    if (!state.subjects || state.subjects.length === 0) {
+        state.subjects = DEFAULT_SUBJECTS.map((name, i) => ({ id: 'subj_' + i, name }));
+    }
+    if (!state.fixedSlots) state.fixedSlots = {};
+    if (!state.gradeCounter) state.gradeCounter = {};
+    if (!state.programView) state.programView = 'menu';
+    
+    if (state.teachers) {
+        state.teachers.forEach(t => {
+            if (!t.classAssignments) t.classAssignments = [];
+            t.classAssignments.forEach(a => {
+                if (!a.subjects) {
+                    a.subjects = a.hours ? [{ subjectId: t.subjectId, hours: a.hours }] : [];
+                    delete a.hours;
+                }
+            });
+        });
+    }
+    save();
+}
+
+// ===================================================================
+// ==================== أدوات ===================================================================
+// ===================================================================
+function uid(p = 'id') { return p + '_' + Date.now() + '_' + Math.floor(Math.random() * 9999); }
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg, type = 'success') {
+    const old = document.querySelector('.toast');
+    if (old) old.remove();
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transition = 'opacity 0.3s';
+        setTimeout(() => t.remove(), 300);
+    }, 2800);
+}
+function closeModal() { document.querySelectorAll('.modal-overlay').forEach(m => m.remove()); }
+function findTeacher(id) { return state.teachers.find(t => t.id === id); }
+function findClass(id) { return state.classes.find(c => c.id === id); }
+function findSubject(id) { return state.subjects.find(s => s.id === id); }
+function getClassTotalHours(classId) {
+    const c = findClass(classId);
+    if (!c) return 0;
+    return (c.days || []).length * (c.periodsPerDay || 6);
+}
+function getClassAssignedHours(classId) {
+    let total = 0;
+    state.teachers.forEach(t => {
+        const a = (t.classAssignments || []).find(x => x.classId === classId);
+        if (a) {
+            if (a.subjects && a.subjects.length) {
+                total += a.subjects.reduce((s, x) => s + x.hours, 0);
+            } else {
+                total += a.hours || 0;
+            }
+        }
+    });
+    return total;
+}
+function getAssignTotalHours(a) {
+    if (a.subjects && a.subjects.length) {
+        return a.subjects.reduce((s, x) => s + x.hours, 0);
+    }
+    return a.hours || 0;
+}
+
+// ===================================================================
+// ==================== التنقل ===================================================================
+// ===================================================================
+function switchTab(tab) {
+    state.currentTab = tab;
+    if (tab === 'programs') state.programView = 'menu';
+    document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.tab === tab);
+    });
+    render();
+}
+
+// ===================================================================
+// ==================== العرض ===================================================================
+// ===================================================================
+function render() {
+    updateBadges();
+    const content = document.getElementById('content');
+    switch(state.currentTab) {
+        case 'subjects': content.innerHTML = renderSubjects(); break;
+        case 'teachers': content.innerHTML = renderTeachers(); break;
+        case 'classes': content.innerHTML = renderClasses(); break;
+        case 'programs': content.innerHTML = renderPrograms(); break;
+    }
+}
+function updateBadges() {
+    document.getElementById('badge-subjects').textContent = state.subjects.length;
+    document.getElementById('badge-teachers').textContent = state.teachers.length;
+    document.getElementById('badge-classes').textContent = state.classes.length;
+}
+
+// ===================================================================
+// ==================== 1. المواد ===================================================================
+// ===================================================================
+function renderSubjects() {
+    return `
+        <div class="card">
+            <div class="card-title"><span>إضافة مادة جديدة</span></div>
+            <div class="row row-3">
+                <div class="field">
+                    <label>اسم المادة</label>
+                    <input type="text" id="subjName" placeholder="مثال: جغرافيا" 
+                           onkeypress="if(event.key==='Enter') addSubject()">
+                </div>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary btn-block" onclick="addSubject()">إضافة المادة</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><span>قائمة المواد (${state.subjects.length})</span></div>
+            ${state.subjects.length === 0 
+                ? '<div class="empty"><div class="icon">—</div>لا توجد مواد</div>'
+                : state.subjects.map(s => `
+                    <div class="item">
+                        <div class="item-head">
+                            <div class="item-title">${esc(s.name)}</div>
+                            <div class="item-actions">
+                                <button class="btn btn-danger btn-xs" onclick="deleteSubject('${s.id}')">حذف</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')
+            }
+        </div>
+    `;
+}
+
+function addSubject() {
+    const name = document.getElementById('subjName').value.trim();
+    if (!name) { toast('أدخل اسم المادة', 'error'); return; }
+    if (state.subjects.some(s => s.name === name)) { toast('موجودة مسبقاً', 'error'); return; }
+    state.subjects.push({ id: uid('subj'), name });
+    save(); render();
+    toast('تمت الإضافة');
+}
+
+function deleteSubject(id) {
+    const s = findSubject(id);
+    if (!s) return;
+    if (!confirm(`حذف مادة "${s.name}"؟`)) return;
+    state.subjects = state.subjects.filter(x => x.id !== id);
+    state.teachers.forEach(t => { if (t.subjectId === id) t.subjectId = ''; });
+    for (const k in state.fixedSlots) {
+        if (state.fixedSlots[k].subjectId === id) delete state.fixedSlots[k];
+    }
+    save(); render();
+    toast('تم الحذف');
+}
+
+// ===================================================================
+// ==================== 2. الأساتذة ===================================================================
+// ===================================================================
+let newTeacherAssignments = [];
+
+function renderTeachers() {
+    const form = `
+        <div class="card">
+            <div class="card-title"><span>إضافة أستاذ جديد</span></div>
+            
+            ${state.subjects.length === 0 
+                ? '<div class="alert alert-warning">أضف المواد أولاً من تبويب "المواد"</div>'
+                : ''}
+            
+            <div class="row row-3">
+                <div class="field">
+                    <label>اسم الأستاذ</label>
+                    <input type="text" id="tName" placeholder="الاسم الكامل">
+                </div>
+                <div class="field">
+                    <label>التخصص (المادة الأساسية)</label>
+                    <select id="tSubject" onchange="onTeacherSubjectChange()">
+                        <option value="">— اختر المادة —</option>
+                        ${state.subjects.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="field">
+                    <label>الحد الأقصى للحصص الأسبوعية</label>
+                    <input type="number" id="tMaxLoad" value="24" min="1" max="40">
+                </div>
+            </div>
+            
+            <div class="field">
+                <label>الشعب والمواد التي يدرّسها وعدد الحصص لكل مادة</label>
+                <div class="helper">أضف شعبة، ثم أضف المواد التي يدرّسها في تلك الشعبة مع عدد الحصص لكل مادة</div>
+                
+                ${state.classes.length === 0 
+                    ? '<div class="alert alert-warning">أضف شعباً أولاً من تبويب "الشعب"</div>'
+                    : `
+                        <div id="newTeacherAssignList">
+                            ${renderNewTeacherAssignments()}
+                        </div>
+                        <button class="btn btn-secondary btn-sm" style="margin-top: 8px;" 
+                                onclick="addNewTeacherAssign()">
+                            + إضافة شعبة
+                        </button>
+                    `
+                }
+            </div>
+            
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="btn btn-primary" onclick="addTeacher()" 
+                        ${state.subjects.length === 0 || state.classes.length === 0 ? 'disabled' : ''}>
+                    حفظ بيانات الأستاذ
+                </button>
+                <button class="btn btn-secondary" onclick="clearNewTeacherForm()">مسح الحقول</button>
+            </div>
+        </div>
+    `;
+    
+    const list = state.teachers.length === 0 
+        ? `<div class="card"><div class="empty"><div class="icon">—</div>لا يوجد أساتذة بعد</div></div>`
+        : `
+            <div class="card">
+                <div class="card-title"><span>قائمة الأساتذة (${state.teachers.length})</span></div>
+                ${state.teachers.map(t => {
+                    const subj = findSubject(t.subjectId);
+                    const assigns = t.classAssignments || [];
+                    const totalHours = assigns.reduce((s, a) => s + getAssignTotalHours(a), 0);
+                    const classTags = assigns.map(a => {
+                        const c = findClass(a.classId);
+                        if (!c) return '';
+                        const clsHours = getAssignTotalHours(a);
+                        const detail = (a.subjects || []).map(s => {
+                            const sj = findSubject(s.subjectId);
+                            return sj ? `${esc(sj.name)}: ${s.hours}` : '';
+                        }).filter(Boolean).join(' | ');
+                        return `<span class="tag tag-blue" title="${detail}">${esc(c.name)}: ${clsHours} حصة</span>`;
+                    }).join('');
+                    return `
+                        <div class="item">
+                            <div class="item-head">
+                                <div class="item-title">${esc(t.name)}</div>
+                                <div class="item-actions">
+                                    <button class="btn btn-secondary btn-xs" onclick="openEditTeacher('${t.id}')">تعديل</button>
+                                    <button class="btn btn-danger btn-xs" onclick="deleteTeacher('${t.id}')">حذف</button>
+                                </div>
+                            </div>
+                            <div class="item-meta">
+                                <span class="tag tag-green">${subj ? esc(subj.name) : 'بدون تخصص'}</span>
+                                <span class="tag tag-orange">${t.maxLoad} حصة كحد أقصى</span>
+                                <span class="tag ${totalHours > t.maxLoad ? 'tag-red' : 'tag-blue'}">${totalHours} حصة موزعة</span>
+                            </div>
+                            ${classTags ? `<div class="item-meta">${classTags}</div>` : '<div class="helper" style="margin-top: 6px; margin-bottom: 0;">لم يتم توزيعه على أي شعبة بعد</div>'}
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    
+    return form + list;
+}
+
+// دالة: عند تغيير التخصص، حدّث المواد الافتراضية في كل الشعب
+function onTeacherSubjectChange() {
+    const subjectId = document.getElementById('tSubject').value;
+    if (!subjectId) return;
+    newTeacherAssignments.forEach(a => {
+        if (!a.subjects || a.subjects.length === 0) {
+            a.subjects = [{ subjectId: subjectId, hours: 3 }];
+        } else if (a.subjects.length === 1 && a.subjects[0].hours === 3) {
+            a.subjects[0].subjectId = subjectId;
+        }
+    });
+    const listEl = document.getElementById('newTeacherAssignList');
+    if (listEl) listEl.innerHTML = renderNewTeacherAssignments();
+}
+
+function renderNewTeacherAssignments() {
+    if (newTeacherAssignments.length === 0) {
+        return '<div class="helper">لم تُضف شعب بعد.</div>';
+    }
+    return newTeacherAssignments.map((a, idx) => {
+        const available = state.classes.filter(cl => 
+            cl.id === a.classId || !newTeacherAssignments.some(x => x.classId === cl.id)
+        );
+        const totalHours = getAssignTotalHours(a);
+        const subs = a.subjects || [];
+        return `
+            <div style="background: white; border: 1px solid var(--border); border-radius: 3px; padding: 8px; margin-bottom: 6px;">
+                <div style="display: grid; grid-template-columns: 1fr 80px 36px; gap: 6px; margin-bottom: 6px;">
+                    <select onchange="updateNewTeacherAssignClass(${idx}, this.value)">
+                        ${available.map(cl => `<option value="${cl.id}" ${cl.id === a.classId ? 'selected' : ''}>${esc(cl.name)}</option>`).join('')}
+                    </select>
+                    <div style="text-align:center; font-weight:700; color: var(--primary-dark); padding: 7px; background: var(--primary-light); border-radius: 3px; font-size: 0.78rem;">
+                        ${totalHours} حصة
+                    </div>
+                    <button class="del" style="width: 30px; height: 30px;" onclick="removeNewTeacherAssign(${idx})" title="حذف الشعبة">×</button>
+                </div>
+                <div style="padding-right: 10px; border-right: 2px solid var(--border); margin-right: 6px;">
+                    ${subs.map((sub, sIdx) => {
+                        const usedSubs = subs.filter((_, i) => i !== sIdx).map(s => s.subjectId);
+                        const availSubs = state.subjects.filter(s => !usedSubs.includes(s.id));
+                        return `
+                            <div style="display: grid; grid-template-columns: 1fr 80px 30px; gap: 5px; margin-bottom: 4px;">
+                                <select onchange="updateNewTeacherAssignSubject(${idx}, ${sIdx}, 'subjectId', this.value)">
+                                    ${availSubs.map(s => `<option value="${s.id}" ${s.id === sub.subjectId ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}
+                                </select>
+                                <input type="number" value="${sub.hours}" min="1" max="40" 
+                                       onchange="updateNewTeacherAssignSubject(${idx}, ${sIdx}, 'hours', this.value)"
+                                       placeholder="حصص">
+                                <button class="del" style="width: 26px; height: 26px; font-size: 0.8rem;" 
+                                        onclick="removeNewTeacherAssignSubject(${idx}, ${sIdx})">×</button>
+                            </div>
+                        `;
+                    }).join('')}
+                    <button class="btn btn-secondary btn-xs" style="margin-top: 4px;" 
+                            onclick="addNewTeacherAssignSubject(${idx})">
+                        + إضافة مادة
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// الإصلاح: استخدام مادة تخصص الأستاذ كمادة افتراضية
+function addNewTeacherAssign() {
+    const available = state.classes.filter(c => !newTeacherAssignments.some(a => a.classId === c.id));
+    if (available.length === 0) { toast('كل الشعب مضافة مسبقاً', 'warning'); return; }
+    
+    const teacherSubject = document.getElementById('tSubject')?.value || '';
+    const defaultSubject = teacherSubject || state.subjects[0]?.id || '';
+    
+    newTeacherAssignments.push({ 
+        classId: available[0].id, 
+        subjects: defaultSubject ? [{ subjectId: defaultSubject, hours: 3 }] : []
+    });
+    document.getElementById('newTeacherAssignList').innerHTML = renderNewTeacherAssignments();
+}
+
+function removeNewTeacherAssign(idx) {
+    newTeacherAssignments.splice(idx, 1);
+    document.getElementById('newTeacherAssignList').innerHTML = renderNewTeacherAssignments();
+}
+
+function updateNewTeacherAssignClass(idx, val) {
+    newTeacherAssignments[idx].classId = val;
+    document.getElementById('newTeacherAssignList').innerHTML = renderNewTeacherAssignments();
+}
+
+function addNewTeacherAssignSubject(assignIdx) {
+    if (state.subjects.length === 0) { toast('أضف مواد أولاً', 'error'); return; }
+    const assign = newTeacherAssignments[assignIdx];
+    const used = (assign.subjects || []).map(s => s.subjectId);
+    const available = state.subjects.filter(s => !used.includes(s.id));
+    if (available.length === 0) { toast('كل المواد مضافة لهذه الشعبة', 'warning'); return; }
+    if (!assign.subjects) assign.subjects = [];
+    assign.subjects.push({ subjectId: available[0].id, hours: 2 });
+    document.getElementById('newTeacherAssignList').innerHTML = renderNewTeacherAssignments();
+}
+
+function removeNewTeacherAssignSubject(assignIdx, subIdx) {
+    newTeacherAssignments[assignIdx].subjects.splice(subIdx, 1);
+    document.getElementById('newTeacherAssignList').innerHTML = renderNewTeacherAssignments();
+}
+
+function updateNewTeacherAssignSubject(assignIdx, subIdx, field, value) {
+    if (field === 'hours') {
+        value = Math.max(1, Math.min(40, parseInt(value) || 1));
+    }
+    newTeacherAssignments[assignIdx].subjects[subIdx][field] = value;
+    document.getElementById('newTeacherAssignList').innerHTML = renderNewTeacherAssignments();
+}
+
+function clearNewTeacherForm() {
+    newTeacherAssignments = [];
+    render();
+}
+
+function addTeacher() {
+    const name = document.getElementById('tName').value.trim();
+    const subjectId = document.getElementById('tSubject').value;
+    const maxLoad = parseInt(document.getElementById('tMaxLoad').value) || 24;
+    
+    if (!name) { toast('أدخل اسم الأستاذ', 'error'); return; }
+    if (!subjectId) { toast('اختر التخصص', 'error'); return; }
+    if (newTeacherAssignments.length === 0) { toast('أضف شعبة واحدة على الأقل', 'error'); return; }
+    
+    for (const a of newTeacherAssignments) {
+        if (!a.subjects || a.subjects.length === 0) {
+            toast('أضف مادة واحدة على الأقل لكل شعبة', 'error'); return;
+        }
+    }
+    
+    const totalHours = newTeacherAssignments.reduce((sum, a) => sum + getAssignTotalHours(a), 0);
+    if (totalHours > maxLoad) {
+        toast(`مجموع الحصص (${totalHours}) يتجاوز الحد (${maxLoad})`, 'error');
+        return;
+    }
+    
+    state.teachers.push({
+        id: uid('t'), name, subjectId, maxLoad,
+        classAssignments: JSON.parse(JSON.stringify(newTeacherAssignments))
+    });
+    newTeacherAssignments = [];
+    save(); render();
+    toast('تمت إضافة الأستاذ');
+}
+
+function deleteTeacher(id) {
+    const t = findTeacher(id);
+    if (!t) return;
+    if (!confirm(`حذف الأستاذ "${t.name}"؟`)) return;
+    state.teachers = state.teachers.filter(x => x.id !== id);
+    for (const k in state.fixedSlots) {
+        if (state.fixedSlots[k].teacherId === id) delete state.fixedSlots[k];
+    }
+    save(); render();
+    toast('تم الحذف');
+}
+
+function openEditTeacher(id) {
+    const t = findTeacher(id);
+    if (!t) return;
+    window._editTeacher = {
+        id, name: t.name, subjectId: t.subjectId, maxLoad: t.maxLoad,
+        assignments: JSON.parse(JSON.stringify(t.classAssignments || []))
+    };
+    window._editTeacher.assignments.forEach(a => {
+        if (!a.subjects) a.subjects = a.hours ? [{ subjectId: t.subjectId, hours: a.hours }] : [];
+    });
+    
+    const html = `
+        <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+            <div class="modal wide">
+                <div class="modal-header">
+                    <h3>تعديل بيانات الأستاذ: ${esc(t.name)}</h3>
+                    <button class="modal-close" onclick="closeModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row row-3">
+                        <div class="field">
+                            <label>الاسم</label>
+                            <input type="text" id="etName" value="${esc(t.name)}">
+                        </div>
+                        <div class="field">
+                            <label>التخصص</label>
+                            <select id="etSubject" onchange="onEditTeacherSubjectChange()">
+                                ${state.subjects.map(s => `<option value="${s.id}" ${s.id === t.subjectId ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>الحد الأقصى</label>
+                            <input type="number" id="etMaxLoad" value="${t.maxLoad}" min="1" max="40">
+                        </div>
+                    </div>
+                    
+                    <div class="field">
+                        <label>الشعب والمواد وعدد الحصص</label>
+                        <div id="editTeacherAssignList">${renderEditTeacherAssignments()}</div>
+                        <button class="btn btn-secondary btn-sm" style="margin-top: 8px;" onclick="addEditTeacherAssign()">
+                            + إضافة شعبة
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
+                    <button class="btn btn-primary" onclick="saveEditTeacher()">حفظ</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function onEditTeacherSubjectChange() {
+    const subjectId = document.getElementById('etSubject').value;
+    if (!subjectId || !window._editTeacher) return;
+    window._editTeacher.assignments.forEach(a => {
+        if (!a.subjects || a.subjects.length === 0) {
+            a.subjects = [{ subjectId: subjectId, hours: 3 }];
+        } else if (a.subjects.length === 1 && a.subjects[0].hours === 3) {
+            a.subjects[0].subjectId = subjectId;
+        }
+    });
+    const listEl = document.getElementById('editTeacherAssignList');
+    if (listEl) listEl.innerHTML = renderEditTeacherAssignments();
+}
+
+function renderEditTeacherAssignments() {
+    const assigns = window._editTeacher.assignments;
+    if (assigns.length === 0) return '<div class="helper">لا توجد شعب</div>';
+    return assigns.map((a, idx) => {
+        const available = state.classes.filter(cl => 
+            cl.id === a.classId || !assigns.some(x => x.classId === cl.id)
+        );
+        const subs = a.subjects || [];
+        const totalHours = subs.reduce((s, x) => s + x.hours, 0);
+        return `
+            <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 8px; margin-bottom: 6px;">
+                <div style="display: grid; grid-template-columns: 1fr 80px 36px; gap: 6px; margin-bottom: 6px;">
+                    <select onchange="updateEditTeacherAssignClass(${idx}, this.value)">
+                        ${available.map(cl => `<option value="${cl.id}" ${cl.id === a.classId ? 'selected' : ''}>${esc(cl.name)}</option>`).join('')}
+                    </select>
+                    <div style="text-align:center; font-weight:700; color: var(--primary-dark); padding: 7px; background: var(--primary-light); border-radius: 3px; font-size: 0.78rem;">
+                        ${totalHours} حصة
+                    </div>
+                    <button class="del" style="width: 30px; height: 30px;" onclick="removeEditTeacherAssign(${idx})">×</button>
+                </div>
+                <div style="padding-right: 10px; border-right: 2px solid var(--border); margin-right: 6px;">
+                    ${subs.map((sub, sIdx) => {
+                        const usedSubs = subs.filter((_, i) => i !== sIdx).map(s => s.subjectId);
+                        const availSubs = state.subjects.filter(s => !usedSubs.includes(s.id));
+                        return `
+                            <div style="display: grid; grid-template-columns: 1fr 80px 30px; gap: 5px; margin-bottom: 4px;">
+                                <select onchange="updateEditTeacherSubject(${idx}, ${sIdx}, 'subjectId', this.value)">
+                                    ${availSubs.map(s => `<option value="${s.id}" ${s.id === sub.subjectId ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}
+                                </select>
+                                <input type="number" value="${sub.hours}" min="1" max="40"
+                                       onchange="updateEditTeacherSubject(${idx}, ${sIdx}, 'hours', this.value)">
+                                <button class="del" style="width: 26px; height: 26px; font-size: 0.8rem;"
+                                        onclick="removeEditTeacherSubject(${idx}, ${sIdx})">×</button>
+                            </div>
+                        `;
+                    }).join('')}
+                    <button class="btn btn-secondary btn-xs" style="margin-top: 4px;"
+                            onclick="addEditTeacherSubject(${idx})">+ إضافة مادة</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function addEditTeacherAssign() {
+    const available = state.classes.filter(c => !window._editTeacher.assignments.some(a => a.classId === c.id));
+    if (available.length === 0) { toast('كل الشعب مضافة', 'warning'); return; }
+    
+    const teacherSubject = document.getElementById('etSubject')?.value || '';
+    const defaultSubject = teacherSubject || state.subjects[0]?.id || '';
+    
+    window._editTeacher.assignments.push({ 
+        classId: available[0].id, 
+        subjects: defaultSubject ? [{ subjectId: defaultSubject, hours: 3 }] : []
+    });
+    document.getElementById('editTeacherAssignList').innerHTML = renderEditTeacherAssignments();
+}
+
+function removeEditTeacherAssign(idx) {
+    window._editTeacher.assignments.splice(idx, 1);
+    document.getElementById('editTeacherAssignList').innerHTML = renderEditTeacherAssignments();
+}
+
+function updateEditTeacherAssignClass(idx, val) {
+    window._editTeacher.assignments[idx].classId = val;
+    document.getElementById('editTeacherAssignList').innerHTML = renderEditTeacherAssignments();
+}
+
+function addEditTeacherSubject(assignIdx) {
+    const assign = window._editTeacher.assignments[assignIdx];
+    const used = (assign.subjects || []).map(s => s.subjectId);
+    const available = state.subjects.filter(s => !used.includes(s.id));
+    if (available.length === 0) { toast('كل المواد مضافة', 'warning'); return; }
+    if (!assign.subjects) assign.subjects = [];
+    assign.subjects.push({ subjectId: available[0].id, hours: 2 });
+    document.getElementById('editTeacherAssignList').innerHTML = renderEditTeacherAssignments();
+}
+
+function removeEditTeacherSubject(assignIdx, subIdx) {
+    window._editTeacher.assignments[assignIdx].subjects.splice(subIdx, 1);
+    document.getElementById('editTeacherAssignList').innerHTML = renderEditTeacherAssignments();
+}
+
+function updateEditTeacherSubject(assignIdx, subIdx, field, value) {
+    if (field === 'hours') value = Math.max(1, Math.min(40, parseInt(value) || 1));
+    window._editTeacher.assignments[assignIdx].subjects[subIdx][field] = value;
+    document.getElementById('editTeacherAssignList').innerHTML = renderEditTeacherAssignments();
+}
+
+function saveEditTeacher() {
+    const t = findTeacher(window._editTeacher.id);
+    if (!t) return;
+    const name = document.getElementById('etName').value.trim();
+    const subjectId = document.getElementById('etSubject').value;
+    const maxLoad = parseInt(document.getElementById('etMaxLoad').value) || 24;
+    
+    if (!name) { toast('أدخل الاسم', 'error'); return; }
+    
+    for (const a of window._editTeacher.assignments) {
+        if (!a.subjects || a.subjects.length === 0) {
+            toast('كل شعبة يجب أن تحتوي على مادة واحدة على الأقل', 'error'); return;
+        }
+    }
+    
+    const totalHours = window._editTeacher.assignments.reduce((sum, a) => sum + getAssignTotalHours(a), 0);
+    if (totalHours > maxLoad) {
+        if (!confirm(`مجموع الحصص (${totalHours}) يتجاوز الحد (${maxLoad}). متابعة؟`)) return;
+    }
+    
+    t.name = name; t.subjectId = subjectId; t.maxLoad = maxLoad;
+    t.classAssignments = JSON.parse(JSON.stringify(window._editTeacher.assignments));
+    save(); closeModal(); render();
+    toast('تم الحفظ');
+}
+
+// ===================================================================
+// ==================== 3. الشعب ===================================================================
+// ===================================================================
+function renderClasses() {
+    return `
+        <div class="card">
+            <div class="card-title"><span>إضافة سريعة حسب الصف</span></div>
+            <div class="helper">اضغط على الصف لإضافة شعبة جديدة</div>
+            <div class="grades-grid">
+                ${GRADES.map(g => {
+                    const count = state.gradeCounter[g.key] || 0;
+                    return `
+                        <button class="btn btn-secondary grade-btn" onclick="addGradeClass('${g.key}')">
+                            <span>${g.label}</span>
+                            ${count > 0 ? `<span class="badge">${count}</span>` : ''}
+                        </button>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><span>إضافة يدوية</span></div>
+            <div class="row row-2">
+                <div class="field">
+                    <label>اسم الشعبة</label>
+                    <input type="text" id="className" placeholder="مثال: العاشر - الفيزياء" 
+                           onkeypress="if(event.key==='Enter') addClass()">
+                </div>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary btn-block" onclick="addClass()">إضافة الشعبة</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><span>قائمة الشعب (${state.classes.length})</span></div>
+            ${state.classes.length === 0 
+                ? '<div class="empty"><div class="icon">—</div>لا توجد شعب</div>'
+                : state.classes.map(c => {
+                    const totalHours = (c.days || []).length * (c.periodsPerDay || 6);
+                    const assignedHours = getClassAssignedHours(c.id);
+                    const teacherCount = state.teachers.filter(t => 
+                        (t.classAssignments || []).some(a => a.classId === c.id)
+                    ).length;
+                    return `
+                        <div class="item">
+                            <div class="item-head">
+                                <div class="item-title">${esc(c.name)}</div>
+                                <div class="item-actions">
+                                    <button class="btn btn-secondary btn-xs" onclick="openClassSettings('${c.id}')">إعدادات</button>
+                                    <button class="btn btn-danger btn-xs" onclick="deleteClass('${c.id}')">حذف</button>
+                                </div>
+                            </div>
+                            <div class="item-meta">
+                                <span class="tag tag-blue">${(c.days || []).length} أيام/أسبوع</span>
+                                <span class="tag tag-orange">${c.periodsPerDay || 6} حصص/يوم</span>
+                                <span class="tag tag-blue">${totalHours} حصة أسبوعياً</span>
+                                <span class="tag tag-green">${teacherCount} أستاذ</span>
+                                <span class="tag ${assignedHours === totalHours ? 'tag-green' : (assignedHours > totalHours ? 'tag-red' : 'tag-orange')}">
+                                    ${assignedHours} / ${totalHours} موزعة
+                                </span>
+                            </div>
+                            <div class="item-meta">
+                                ${(c.days || []).map(d => `<span class="tag">${d}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('')
+            }
+        </div>
+    `;
+}
+
+function addGradeClass(gradeKey) {
+    const grade = GRADES.find(g => g.key === gradeKey);
+    if (!grade) return;
+    state.gradeCounter[gradeKey] = (state.gradeCounter[gradeKey] || 0) + 1;
+    const num = state.gradeCounter[gradeKey];
+    const ordinals = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة', 'السادسة', 'السابعة', 'الثامنة', 'التاسعة', 'العاشرة'];
+    const ord = ordinals[num - 1] || `رقم ${num}`;
+    const name = `${grade.label} - شعبة ${ord}`;
+    
+    state.classes.push({
+        id: uid('c'), name, grade: gradeKey,
+        days: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'],
+        periodsPerDay: 6
+    });
+    save(); render();
+    toast(`تمت إضافة "${name}"`);
+}
+
+function addClass() {
+    const name = document.getElementById('className').value.trim();
+    if (!name) { toast('أدخل اسم الشعبة', 'error'); return; }
+    if (state.classes.some(c => c.name === name)) { toast('موجودة', 'error'); return; }
+    state.classes.push({
+        id: uid('c'), name,
+        days: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'],
+        periodsPerDay: 6
+    });
+    save(); render();
+    toast('تمت الإضافة');
+}
+
+function deleteClass(id) {
+    const c = findClass(id);
+    if (!c) return;
+    if (!confirm(`حذف "${c.name}"؟`)) return;
+    state.classes = state.classes.filter(x => x.id !== id);
+    if (c.grade && state.gradeCounter[c.grade]) {
+        state.gradeCounter[c.grade] = Math.max(0, state.gradeCounter[c.grade] - 1);
+    }
+    state.teachers.forEach(t => {
+        if (t.classAssignments) t.classAssignments = t.classAssignments.filter(a => a.classId !== id);
+    });
+    for (const k in state.fixedSlots) {
+        if (k.startsWith(id + '_')) delete state.fixedSlots[k];
+    }
+    save(); render();
+    toast('تم الحذف');
+}
+
+function openClassSettings(id) {
+    const c = findClass(id);
+    if (!c) return;
+    window._editClass = { id, days: [...(c.days || [])], periodsPerDay: c.periodsPerDay || 6 };
+    
+    const html = `
+        <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>إعدادات الشعبة: ${esc(c.name)}</h3>
+                    <button class="modal-close" onclick="closeModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="field">
+                        <label>اسم الشعبة</label>
+                        <input type="text" id="ecName" value="${esc(c.name)}">
+                    </div>
+                    <div class="field">
+                        <label>أيام الدراسة</label>
+                        <div class="chip-grid" id="ecDaysGrid">
+                            ${ALL_DAYS.map(d => `
+                                <div class="chip ${window._editClass.days.includes(d) ? 'on' : ''}" 
+                                     onclick="toggleEditDay('${d}')">
+                                    ${d}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="row row-2">
+                        <div class="field">
+                            <label>عدد الحصص في اليوم</label>
+                            <input type="number" id="ecPeriods" value="${window._editClass.periodsPerDay}" 
+                                   min="1" max="12" onchange="updateEditTotal()" oninput="updateEditTotal()">
+                        </div>
+                        <div class="field">
+                            <label>المجموع الأسبوعي</label>
+                            <input type="text" id="ecTotal" value="${window._editClass.days.length * window._editClass.periodsPerDay}" 
+                                   readonly style="background: #f0f2ea; text-align: center; font-weight: 700; color: var(--primary-dark);">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal()">إلغاء</button>
+                    <button class="btn btn-primary" onclick="saveClassSettings()">حفظ</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function toggleEditDay(day) {
+    if (window._editClass.days.includes(day)) {
+        window._editClass.days = window._editClass.days.filter(d => d !== day);
+    } else {
+        window._editClass.days.push(day);
+    }
+    const grid = document.getElementById('ecDaysGrid');
+    grid.innerHTML = ALL_DAYS.map(d => `
+        <div class="chip ${window._editClass.days.includes(d) ? 'on' : ''}" onclick="toggleEditDay('${d}')">${d}</div>
+    `).join('');
+    updateEditTotal();
+}
+
+function updateEditTotal() {
+    const periods = parseInt(document.getElementById('ecPeriods').value) || 6;
+    window._editClass.periodsPerDay = periods;
+    document.getElementById('ecTotal').value = window._editClass.days.length * periods;
+}
+
+function saveClassSettings() {
+    const c = findClass(window._editClass.id);
+    if (!c) return;
+    const name = document.getElementById('ecName').value.trim();
+    if (!name) { toast('أدخل الاسم', 'error'); return; }
+    if (window._editClass.days.length === 0) { toast('اختر يوم واحد على الأقل', 'error'); return; }
+    c.name = name;
+    c.days = [...window._editClass.days];
+    c.periodsPerDay = window._editClass.periodsPerDay;
+    save(); closeModal(); render();
+    toast('تم الحفظ');
+}
+
+// ===================================================================
+// ==================== 4. البرامج ===================================================================
+// ===================================================================
+function renderPrograms() {
+    if (state.programView === 'menu') return renderProgramsMenu();
+    if (state.programView === 'generate') return renderProgramGenerate();
+    if (state.programView === 'manual') return renderProgramManual();
+    if (state.programView === 'viewer') return renderProgramViewer();
+    return renderProgramsMenu();
+}
+
+function renderProgramsMenu() {
+    const totalRequired = state.classes.reduce((s, c) => s + getClassTotalHours(c.id), 0);
+    const totalAssigned = state.classes.reduce((s, c) => s + getClassAssignedHours(c.id), 0);
+    
+    return `
+        <div class="card">
+            <div class="card-title"><span>إدارة البرامج</span></div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="num">${state.classes.length}</div>
+                    <div class="lbl">الشعب</div>
+                </div>
+                <div class="stat ${totalAssigned >= totalRequired ? 'ok' : 'err'}">
+                    <div class="num">${totalAssigned} / ${totalRequired}</div>
+                    <div class="lbl">الحصص الموزعة</div>
+                </div>
+                <div class="stat">
+                    <div class="num">${Object.keys(state.fixedSlots).length}</div>
+                    <div class="lbl">حصص مثبتة</div>
+                </div>
+                <div class="stat ${state.schedule ? 'ok' : ''}">
+                    <div class="num">${state.schedule ? 'جاهز' : '—'}</div>
+                    <div class="lbl">حالة الجدول</div>
+                </div>
+            </div>
+            
+            <div class="row row-2">
+                <button class="btn btn-success btn-lg" onclick="goProgramView('generate')" 
+                        style="padding: 22px; flex-direction: column; gap: 6px;">
+                    <div style="font-size: 1rem;">إنشاء البرنامج</div>
+                    <div style="font-size: 0.72rem; opacity: 0.9; font-weight: 500;">توليد الجداول لجميع الشعب تلقائياً</div>
+                </button>
+                
+                <button class="btn btn-warning btn-lg" onclick="goProgramView('manual')" 
+                        style="padding: 22px; flex-direction: column; gap: 6px;">
+                    <div style="font-size: 1rem;">التثبيت اليدوي</div>
+                    <div style="font-size: 0.72rem; opacity: 0.9; font-weight: 500;">تثبيت حصص معينة قبل التوليد</div>
+                </button>
+            </div>
+            
+            <div style="margin-top: 10px;">
+                <button class="btn btn-primary btn-lg" onclick="goProgramView('viewer')" 
+                        style="padding: 18px; width: 100%; flex-direction: column; gap: 5px;"
+                        ${!state.schedule ? 'disabled' : ''}>
+                    <div style="font-size: 0.95rem;">عرض البرامج المُنشأة</div>
+                    <div style="font-size: 0.7rem; opacity: 0.9; font-weight: 500;">
+                        ${state.schedule ? 'عرض وتحميل وطباعة الجداول' : 'قم بإنشاء البرنامج أولاً'}
+                    </div>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function goProgramView(view) {
+    state.programView = view;
+    render();
+}
+
+function renderProgramGenerate() {
+    const totalRequired = state.classes.reduce((s, c) => s + getClassTotalHours(c.id), 0);
+    const totalAssigned = state.classes.reduce((s, c) => s + getClassAssignedHours(c.id), 0);
+    
+    const issues = [];
+    state.classes.forEach(c => {
+        const required = getClassTotalHours(c.id);
+        const assigned = getClassAssignedHours(c.id);
+        if (assigned < required) issues.push(`"${c.name}": المطلوب ${required} حصة، الموزع ${assigned} (ينقص ${required - assigned})`);
+        else if (assigned > required) issues.push(`"${c.name}": المطلوب ${required} حصة، الموزع ${assigned} (زيادة ${assigned - required})`);
+    });
+    
+    return `
+        <div class="card">
+            <div class="card-title">
+                <span>إنشاء البرنامج</span>
+                <button class="btn btn-secondary btn-sm" onclick="goProgramView('menu')">رجوع</button>
+            </div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="num">${state.classes.length}</div>
+                    <div class="lbl">الشعب</div>
+                </div>
+                <div class="stat ${totalAssigned >= totalRequired ? 'ok' : 'err'}">
+                    <div class="num">${totalAssigned} / ${totalRequired}</div>
+                    <div class="lbl">حصص موزعة</div>
+                </div>
+                <div class="stat">
+                    <div class="num">${Object.keys(state.fixedSlots).length}</div>
+                    <div class="lbl">حصص مثبتة</div>
+                </div>
+            </div>
+            
+            ${issues.length === 0 && totalAssigned > 0
+                ? `<div class="alert alert-success">جميع البيانات جاهزة. اضغط الزر أدناه لتوليد البرنامج.</div>`
+                : issues.length > 0
+                    ? `<div class="alert alert-warning"><div>${issues.slice(0, 5).join('<br>')}${issues.length > 5 ? `<br>... و ${issues.length - 5} مشكلة أخرى` : ''}</div></div>`
+                    : `<div class="alert alert-warning">لم يتم توزيع أي حصص بعد</div>`
+            }
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                <button class="btn btn-success btn-lg" onclick="generateSchedule()" 
+                        ${totalAssigned === 0 ? 'disabled' : ''}>
+                    توليد البرنامج
+                </button>
+                ${state.schedule ? `
+                    <button class="btn btn-warning btn-lg" onclick="clearSchedule()">
+                        مسح البرنامج
+                    </button>
+                ` : ''}
+            </div>
+        </div>
+    `;
+}
+
+function renderProgramManual() {
+    if (state.classes.length === 0) {
+        return `
+            <div class="card">
+                <div class="card-title">
+                    <span>التثبيت اليدوي</span>
+                    <button class="btn btn-secondary btn-sm" onclick="goProgramView('menu')">رجوع</button>
+                </div>
+                <div class="empty"><div class="icon">—</div>أضف شعباً أولاً</div>
+            </div>
+        `;
+    }
+    
+    if (!window._manualClassId || !findClass(window._manualClassId)) {
+        window._manualClassId = state.classes[0].id;
+    }
+    const c = findClass(window._manualClassId);
+    
+    const grid = {};
+    (c.days || []).forEach(d => { grid[d] = new Array(c.periodsPerDay || 6).fill(null); });
+    if (state.schedule && state.schedule[c.id]) {
+        (c.days || []).forEach(d => {
+            for (let p = 0; p < (c.periodsPerDay || 6); p++) {
+                if (state.schedule[c.id][d] && state.schedule[c.id][d][p]) {
+                    grid[d][p] = { ...state.schedule[c.id][d][p] };
+                }
+            }
+        });
+    }
+    for (const k in state.fixedSlots) {
+        const parts = k.split('_');
+        if (parts[0] === c.id) {
+            const day = parts[1], period = parseInt(parts[2]);
+            if (grid[day] && period < grid[day].length) {
+                grid[day][period] = { ...state.fixedSlots[k], fixed: true };
+            }
+        }
+    }
+    
+    return `
+        <div class="card">
+            <div class="card-title">
+                <span>التثبيت اليدوي</span>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-warning btn-sm" onclick="clearClassFixed('${c.id}')">مسح التثبيتات</button>
+                    <button class="btn btn-secondary btn-sm" onclick="goProgramView('menu')">رجوع</button>
+                </div>
+            </div>
+            
+            <div class="field">
+                <label>اختر الشعبة</label>
+                <div class="chip-grid">
+                    ${state.classes.map(cl => `
+                        <div class="chip ${cl.id === c.id ? 'on' : ''}" onclick="setManualClass('${cl.id}')">
+                            ${esc(cl.name)}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            
+            ${state.subjects.length === 0 
+                ? '<div class="alert alert-warning">أضف مواد أولاً</div>'
+                : `
+                    <div class="row row-2">
+                        <div class="field">
+                            <label>المادة</label>
+                            <select id="mSubject">
+                                <option value="">— اختر المادة —</option>
+                                ${state.subjects.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>الأستاذ (اختياري)</label>
+                            <select id="mTeacher">
+                                <option value="">— تلقائي —</option>
+                                ${state.teachers.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        اختر مادة ثم اضغط على أي خانة لتثبيتها. اضغط على خانة مثبتة لإلغاء تثبيتها.
+                    </div>
+                    
+                    <div class="tt-wrap" style="margin-top: 10px;">
+                        <table class="tt">
+                            <thead>
+                                <tr>
+                                    <th class="corner">اليوم / الحصة</th>
+                                    ${Array.from({length: c.periodsPerDay || 6}, (_, i) => `<th>الحصة ${i+1}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${(c.days || []).map(day => `
+                                    <tr>
+                                        <td class="day-cell">${day}</td>
+                                        ${Array.from({length: c.periodsPerDay || 6}, (_, p) => {
+                                            const slot = grid[day][p];
+                                            if (slot) {
+                                                const subj = findSubject(slot.subjectId);
+                                                const tea = findTeacher(slot.teacherId);
+                                                const cls = slot.fixed ? 'slot fixed' : 'slot filled';
+                                                return `
+                                                    <td class="clickable" onclick="handleManualClick('${c.id}', '${day}', ${p})">
+                                                        <div class="${cls}" style="position: relative;">
+                                                            ${slot.fixed ? '<span class="pin">•</span>' : ''}
+                                                            <span class="slot-sub">${subj ? esc(subj.name) : '؟'}</span>
+                                                            <span class="slot-teacher">${tea ? esc(tea.name) : '؟'}</span>
+                                                        </div>
+                                                    </td>
+                                                `;
+                                            }
+                                            return `
+                                                <td class="clickable" onclick="handleManualClick('${c.id}', '${day}', ${p})">
+                                                    <div class="slot empty">—</div>
+                                                </td>
+                                            `;
+                                        }).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `
+            }
+        </div>
+    `;
+}
+
+function setManualClass(id) {
+    window._manualClassId = id;
+    render();
+}
+
+function handleManualClick(classId, day, period) {
+    const key = classId + '_' + day + '_' + period;
+    if (state.fixedSlots[key]) {
+        delete state.fixedSlots[key];
+        save(); render();
+        toast('تم إلغاء التثبيت');
+        return;
+    }
+    const subjectId = document.getElementById('mSubject').value;
+    if (!subjectId) { toast('اختر المادة أولاً', 'error'); return; }
+    let teacherId = document.getElementById('mTeacher').value;
+    if (!teacherId) {
+        const teachersOfSubj = state.teachers.filter(t => t.subjectId === subjectId);
+        if (teachersOfSubj.length === 0) { toast('لا يوجد أستاذ لهذه المادة', 'error'); return; }
+        teacherId = teachersOfSubj[0].id;
+    }
+    state.fixedSlots[key] = { subjectId, teacherId };
+    save(); render();
+    toast('تم التثبيت');
+}
+
+function clearClassFixed(classId) {
+    if (!confirm('مسح كل التثبيتات لهذه الشعبة؟')) return;
+    for (const k in state.fixedSlots) {
+        if (k.startsWith(classId + '_')) delete state.fixedSlots[k];
+    }
+    save(); render();
+    toast('تم المسح');
+}
+
+function renderProgramViewer() {
+    if (!state.schedule) {
+        return `
+            <div class="card">
+                <div class="card-title">
+                    <span>عرض البرامج</span>
+                    <button class="btn btn-secondary btn-sm" onclick="goProgramView('menu')">رجوع</button>
+                </div>
+                <div class="empty">
+                    <div class="icon">—</div>
+                    <div>لم يتم إنشاء البرنامج بعد</div>
+                    <div style="margin-top: 12px;">
+                        <button class="btn btn-success" onclick="goProgramView('generate')">اذهب للإنشاء</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    let body = '';
+    if (state.currentView === 'all') body = state.classes.map(c => renderClassTable(c.id)).join('');
+    else if (state.currentView.startsWith('c_')) body = renderClassTable(state.currentView.substring(2));
+    else if (state.currentView.startsWith('t_')) body = renderTeacherTable(state.currentView.substring(2));
+    
+    return `
+        <div class="card">
+            <div class="card-title">
+                <span>عرض البرامج</span>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button class="btn btn-primary btn-sm" onclick="downloadAll()">تحميل كل الشعب</button>
+                    <button class="btn btn-secondary btn-sm" onclick="printAll()">طباعة</button>
+                    <button class="btn btn-secondary btn-sm" onclick="goProgramView('menu')">رجوع</button>
+                </div>
+            </div>
+            
+            <div class="chip-grid">
+                <div class="chip ${state.currentView === 'all' ? 'on' : ''}" onclick="setView('all')">
+                    كل الشعب
+                </div>
+                ${state.classes.map(c => `
+                    <div class="chip ${state.currentView === 'c_' + c.id ? 'on' : ''}" onclick="setView('c_${c.id}')">
+                        ${esc(c.name)}
+                    </div>
+                `).join('')}
+                ${state.teachers.map(t => `
+                    <div class="chip ${state.currentView === 't_' + t.id ? 'on' : ''}" onclick="setView('t_${t.id}')">
+                        ${esc(t.name)}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        
+        <div id="scheduleArea">${body}</div>
+    `;
+}
+
+function setView(view) { state.currentView = view; render(); }
+
+function renderClassTable(classId) {
+    const c = findClass(classId);
+    if (!c) return '';
+    const grid = state.schedule[classId];
+    if (!grid) return '';
+    return `
+        <div class="card" id="classTable_${classId}">
+            <div class="card-title">
+                <span>${esc(c.name)}</span>
+                <span class="tag tag-blue">${(c.days || []).length * (c.periodsPerDay || 6)} حصة/أسبوع</span>
+            </div>
+            <div class="tt-wrap">
+                <table class="tt">
+                    <thead>
+                        <tr>
+                            <th class="corner">اليوم / الحصة</th>
+                            ${Array.from({length: c.periodsPerDay || 6}, (_, i) => `<th>الحصة ${i+1}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${(c.days || []).map(day => `
+                            <tr>
+                                <td class="day-cell">${day}</td>
+                                ${Array.from({length: c.periodsPerDay || 6}, (_, p) => {
+                                    const slot = grid[day] ? grid[day][p] : null;
+                                    if (slot) {
+                                        const subj = findSubject(slot.subjectId);
+                                        const tea = findTeacher(slot.teacherId);
+                                        return `
+                                            <td>
+                                                <div class="slot filled">
+                                                    <span class="slot-sub">${subj ? esc(subj.name) : '؟'}</span>
+                                                    <span class="slot-teacher">${tea ? esc(tea.name) : '؟'}</span>
+                                                </div>
+                                            </td>
+                                        `;
+                                    }
+                                    return `<td><div class="slot empty">—</div></td>`;
+                                }).join('')}
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function renderTeacherTable(teacherId) {
+    const t = findTeacher(teacherId);
+    if (!t) return '';
+    const subj = findSubject(t.subjectId);
+    const allDays = new Set();
+    let maxPeriods = 0;
+    state.classes.forEach(c => {
+        (c.days || []).forEach(d => allDays.add(d));
+        maxPeriods = Math.max(maxPeriods, c.periodsPerDay || 6);
+    });
+    const orderedDays = ALL_DAYS.filter(d => allDays.has(d));
+    return `
+        <div class="card" id="teacherTable_${teacherId}">
+            <div class="card-title">
+                <span>${esc(t.name)}</span>
+                ${subj ? `<span class="tag tag-green">${esc(subj.name)}</span>` : ''}
+            </div>
+            <div class="tt-wrap">
+                <table class="tt">
+                    <thead>
+                        <tr>
+                            <th class="corner">اليوم / الحصة</th>
+                            ${Array.from({length: maxPeriods}, (_, i) => `<th>الحصة ${i+1}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orderedDays.map(day => `
+                            <tr>
+                                <td class="day-cell">${day}</td>
+                                ${Array.from({length: maxPeriods}, (_, p) => {
+                                    let found = null;
+                                    for (const c of state.classes) {
+                                        const g = state.schedule[c.id];
+                                        if (g && g[day] && g[day][p] && g[day][p].teacherId === teacherId) {
+                                            found = { slot: g[day][p], className: c.name };
+                                            break;
+                                        }
+                                    }
+                                    if (found) {
+                                        const sj = findSubject(found.slot.subjectId);
+                                        return `
+                                            <td>
+                                                <div class="slot filled">
+                                                    <span class="slot-sub">${sj ? esc(sj.name) : '؟'}</span>
+                                                    <span class="slot-teacher">${esc(found.className)}</span>
+                                                </div>
+                                            </td>
+                                        `;
+                                    }
+                                    return `<td><div class="slot empty">—</div></td>`;
+                                }).join('')}
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+// ===================================================================
+// ==================== التوليد ===================================================================
+// ===================================================================
+function generateSchedule() {
+    if (state.classes.length === 0) { toast('أضف شعباً', 'error'); return; }
+    if (state.teachers.length === 0) { toast('أضف أساتذة', 'error'); return; }
+    
+    const lessons = [];
+    for (const t of state.teachers) {
+        for (const a of (t.classAssignments || [])) {
+            const c = findClass(a.classId);
+            if (!c) continue;
+            if (a.subjects && a.subjects.length) {
+                for (const sub of a.subjects) {
+                    for (let i = 0; i < sub.hours; i++) {
+                        lessons.push({ 
+                            classId: a.classId, 
+                            teacherId: t.id, 
+                            subjectId: sub.subjectId 
+                        });
+                    }
+                }
+            } else if (a.hours) {
+                for (let i = 0; i < a.hours; i++) {
+                    lessons.push({ 
+                        classId: a.classId, 
+                        teacherId: t.id, 
+                        subjectId: t.subjectId 
+                    });
+                }
+            }
+        }
+    }
+    if (lessons.length === 0) { toast('لا توجد دروس', 'error'); return; }
+    
+    const groups = {};
+    lessons.forEach(l => {
+        const key = `${l.classId}_${l.subjectId}_${l.teacherId}`;
+        if (!groups[key]) groups[key] = { ...l, count: 0 };
+        groups[key].count++;
+    });
+    const teacherLoad = {};
+    state.teachers.forEach(t => teacherLoad[t.id] = 0);
+    Object.values(groups).forEach(g => teacherLoad[g.teacherId] += g.count);
+    const sortedGroups = Object.values(groups).sort((a, b) => {
+        if (teacherLoad[a.teacherId] !== teacherLoad[b.teacherId])
+            return teacherLoad[b.teacherId] - teacherLoad[a.teacherId];
+        return b.count - a.count;
+    });
+    const finalLessons = [];
+    sortedGroups.forEach(g => {
+        for (let i = 0; i < g.count; i++) {
+            finalLessons.push({ classId: g.classId, subjectId: g.subjectId, teacherId: g.teacherId });
+        }
+    });
+    
+    let success = false;
+    let classGrid = null;
+    const maxAttempts = 150;
+    
+    for (let attempt = 0; attempt < maxAttempts && !success; attempt++) {
+        classGrid = {};
+        state.classes.forEach(c => {
+            classGrid[c.id] = {};
+            (c.days || []).forEach(d => { classGrid[c.id][d] = new Array(c.periodsPerDay || 6).fill(null); });
+        });
+        const teacherBusy = {};
+        state.teachers.forEach(t => teacherBusy[t.id] = new Set());
+        
+        for (const k in state.fixedSlots) {
+            const parts = k.split('_');
+            const cid = parts[0], day = parts[1], period = parseInt(parts[2]);
+            const fs = state.fixedSlots[k];
+            if (classGrid[cid] && classGrid[cid][day] && period < classGrid[cid][day].length) {
+                classGrid[cid][day][period] = { subjectId: fs.subjectId, teacherId: fs.teacherId, fixed: true };
+                if (teacherBusy[fs.teacherId]) teacherBusy[fs.teacherId].add(`${day}_${period}`);
+            }
+        }
+        
+        const shuffled = [...finalLessons].sort(() => Math.random() - 0.5);
+        success = true;
+        for (const lesson of shuffled) {
+            if (!placeLesson(lesson, classGrid, teacherBusy)) { success = false; break; }
+        }
+    }
+    
+    if (!success) { toast('تعذر إنشاء البرنامج. حاول تعديل التوزيعات.', 'error'); return; }
+    
+    state.schedule = classGrid;
+    save();
+    state.programView = 'viewer';
+    state.currentView = 'all';
+    render();
+    toast('تم إنشاء البرنامج بنجاح');
+}
+
+function placeLesson(lesson, classGrid, teacherBusy) {
+    const { classId, subjectId, teacherId } = lesson;
+    const c = findClass(classId);
+    if (!c) return false;
+    const available = [];
+    (c.days || []).forEach(day => {
+        if (!classGrid[classId] || !classGrid[classId][day]) return;
+        for (let p = 0; p < (c.periodsPerDay || 6); p++) {
+            if (classGrid[classId][day][p] !== null) continue;
+            if (teacherBusy[teacherId] && teacherBusy[teacherId].has(`${day}_${p}`)) continue;
+            const sameSubjectToday = classGrid[classId][day].some(s => s && s.subjectId === subjectId);
+            available.push({ day, period: p, sameSubjectToday });
+        }
+    });
+    if (available.length === 0) return false;
+    available.sort((a, b) => {
+        if (a.sameSubjectToday !== b.sameSubjectToday) return a.sameSubjectToday ? 1 : -1;
+        const loadA = classGrid[classId][a.day].filter(x => x !== null).length;
+        const loadB = classGrid[classId][b.day].filter(x => x !== null).length;
+        if (loadA !== loadB) return loadA - loadB;
+        return Math.random() - 0.5;
+    });
+    const topN = available.slice(0, Math.min(5, available.length));
+    const chosen = topN[Math.floor(Math.random() * topN.length)];
+    classGrid[classId][chosen.day][chosen.period] = { subjectId, teacherId };
+    teacherBusy[teacherId].add(`${chosen.day}_${chosen.period}`);
+    return true;
+}
+
+function clearSchedule() {
+    if (!confirm('مسح البرنامج الحالي؟')) return;
+    state.schedule = null;
+    save(); render();
+    toast('تم المسح');
+}
+
+// ===================================================================
+// ==================== التحميل والطباعة ===================================================================
+// ===================================================================
+async function downloadAll() {
+    if (!state.schedule) { toast('لا يوجد برنامج', 'error'); return; }
+    toast('جاري التحميل...', 'warning');
+    for (const c of state.classes) {
+        await downloadOne(c.id);
+        await new Promise(r => setTimeout(r, 400));
+    }
+    toast('تم التحميل');
+}
+
+async function downloadOne(classId) {
+    const c = findClass(classId);
+    if (!c) return;
+    const area = document.getElementById('scheduleArea');
+    if (!area) return;
+    const original = area.innerHTML;
+    area.innerHTML = renderClassTable(classId);
+    const target = document.getElementById('classTable_' + classId);
+    if (!target) { area.innerHTML = original; return; }
+    try {
+        const canvas = await html2canvas(target, { backgroundColor: '#ffffff', scale: 2 });
+        const link = document.createElement('a');
+        link.download = 'برنامج_' + c.name.replace(/\s+/g, '_') + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } catch(e) { console.error(e); }
+    area.innerHTML = original;
+}
+
+function printAll() { window.print(); }
+
+// ===================================================================
+// ==================== تصدير/استيراد ===================================================================
+// ===================================================================
+function exportData() {
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'school_' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('تم التصدير');
+}
+
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const data = JSON.parse(ev.target.result);
+                if (!confirm('سيتم استبدال كل البيانات. متابعة؟')) return;
+                state = { ...state, ...data };
+                if (state.teachers) {
+                    state.teachers.forEach(t => {
+                        if (!t.classAssignments) t.classAssignments = [];
+                        t.classAssignments.forEach(a => {
+                            if (!a.subjects) {
+                                a.subjects = a.hours ? [{ subjectId: t.subjectId, hours: a.hours }] : [];
+                                delete a.hours;
+                            }
+                        });
+                    });
+                }
+                save(); render();
+                toast('تم الاستيراد');
+            } catch(err) { toast('ملف غير صالح', 'error'); }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// ===================================================================
+// ==================== بدء ===================================================================
+// ===================================================================
+load();
+render();
+</script>
+</body>
+</html>
